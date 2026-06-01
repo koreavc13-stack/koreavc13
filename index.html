@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minimal Task Dashboard</title>
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons for clean visuals -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 id="app-title">계획표</h1>
+        <p class="subtitle" id="current-date">2026년 6월 1일 월요일</p>
+      </div>
+      <div class="header-right">
+        <button id="theme-settings-btn" class="btn btn-text" aria-label="테마 설정" title="테마 설정">
+  <i data-lucide="settings"></i>
+</button>
+<span class="user-greeting">안녕하세요! 👋</span>
+      </div>
+    </header>
+<div id="theme-drawer" class="theme-drawer hidden">
+  <div class="drawer-header">
+    <h2>테마 커스텀</h2>
+    <button id="theme-drawer-close" class="btn btn-text" aria-label="닫기"><i data-lucide="x"></i></button>
+  </div>
+  <div class="drawer-section">
+    <h3>배경 테마</h3>
+    <div class="theme-options" id="bg-theme-options">
+      <button class="theme-btn" data-bg="#f7f9fc" data-name="크림 화이트">화이트</button>
+      <button class="theme-btn" data-bg="#f5f0ff" data-name="라벤더 브리즈">라벤더</button>
+      <button class="theme-btn" data-bg="#f0fff4" data-name="민트 플래시">민트</button>
+      <button class="theme-btn" data-bg="#fff5f0" data-name="피치 선셋">피치</button>
+      <button class="theme-btn" data-bg="#1a202c" data-name="다크 파스텔">다크</button>
+    </div>
+  </div>
+  <div class="drawer-section">
+    <h3>강조 색상</h3>
+    <div class="theme-options" id="accent-color-options">
+      <button class="color-btn" data-accent="#5c6ac4" data-name="인디고 블루"></button>
+      <button class="color-btn" data-accent="#ff6f91" data-name="파스텔 로즈"></button>
+      <button class="color-btn" data-accent="#f6c343" data-name="멜로우 골드"></button>
+      <button class="color-btn" data-accent="#38b2ac" data-name="세이지 그린"></button>
+    </div>
+  </div>
+  <div class="drawer-section">
+    <h3>폰트 선택</h3>
+    <div class="font-options" id="font-options">
+      <button class="font-btn" data-font="Outfit" data-name="Outfit (기본)"></button>
+      <button class="font-btn" data-font="Quicksand" data-name="Quicksand"></button>
+      <button class="font-btn" data-font="Playfair Display" data-name="Playfair Display"></button>
+    </div>
+  </div>
+</div>
+
+    <!-- Dashboard Statistics -->
+    <section class="dashboard-section" aria-label="통계 대시보드">
+      <div class="stats-card progress-card">
+        <div class="progress-circle-container">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="progress-ring__background" stroke-width="10" fill="transparent" r="50" cx="60" cy="60"/>
+            <circle class="progress-ring__circle" stroke-width="10" fill="transparent" r="50" cx="60" cy="60"/>
+          </svg>
+          <div class="progress-percentage"><span id="completion-ratio">0</span>%</div>
+        </div>
+        <div class="progress-info">
+          <h3>오늘의 성취도</h3>
+          <p class="progress-desc">할 일을 완료하고 그래프를 채워보세요!</p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box" id="stat-total">
+          <div class="stat-icon total"><i data-lucide="layers"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">전체 할 일</span>
+            <span class="stat-value" id="count-total">0</span>
+          </div>
+        </div>
+        <div class="stat-box" id="stat-active">
+          <div class="stat-icon active"><i data-lucide="circle"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">진행 중</span>
+            <span class="stat-value" id="count-active">0</span>
+          </div>
+        </div>
+        <div class="stat-box" id="stat-completed">
+          <div class="stat-icon completed"><i data-lucide="check-circle-2"></i></div>
+          <div class="stat-content">
+            <span class="stat-label">완료됨</span>
+            <span class="stat-value" id="count-completed">0</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content Grid -->
+    <main class="main-content">
+      <!-- Left: Create & Filter -->
+      <aside class="control-sidebar">
+        <!-- Task Form -->
+        <div class="card task-form-card">
+          <h2>새로운 할 일 등록</h2>
+          <form id="task-form" autocomplete="off">
+            <div class="form-group">
+              <label for="task-title">할 일 제목</label>
+              <input type="text" id="task-title" placeholder="무엇을 해야 하나요?" required>
+            </div>
+            
+            <div class="form-row">
+              <div class="form-group">
+                <label for="task-priority">우선순위</label>
+                <select id="task-priority">
+                  <option value="low">낮음 🟢</option>
+                  <option value="medium" selected>보통 🟡</option>
+                  <option value="high">높음 🔴</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="task-date">기한 설정</label>
+                <input type="date" id="task-date">
+              </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" id="add-task-btn">
+              <i data-lucide="plus"></i> 할 일 추가하기
+            </button>
+          </form>
+        </div>
+
+        <!-- Filter & Sorting Panel -->
+        <div class="card filter-card">
+          <h2>필터 및 정렬</h2>
+          <div class="filter-section">
+            <span class="filter-title">상태 필터</span>
+            <div class="filter-tabs">
+              <button class="filter-btn active" data-filter="all">전체</button>
+              <button class="filter-btn" data-filter="active">진행 중</button>
+              <button class="filter-btn" data-filter="completed">완료</button>
+            </div>
+          </div>
+          
+          <div class="filter-section">
+            <span class="filter-title">우선순위 필터</span>
+            <div class="filter-tabs">
+              <button class="filter-btn active" data-priority="all">전체</button>
+              <button class="filter-btn" data-priority="high">높음</button>
+              <button class="filter-btn" data-priority="medium">보통</button>
+              <button class="filter-btn" data-priority="low">낮음</button>
+            </div>
+          </div>
+
+          <div class="filter-section">
+            <label class="filter-title" for="sort-select">정렬 기준</label>
+            <select id="sort-select" class="sort-dropdown">
+              <option value="createdAt-desc">최신 등록순</option>
+              <option value="createdAt-asc">오래된 등록순</option>
+              <option value="dueDate-asc">기한 임박순</option>
+              <option value="priority-desc">우선순위 높은순</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Goals Card (날짜 없는 목표) -->
+        <div class="card goals-card">
+          <h2>나의 장기 목표</h2>
+          <form id="goal-form" autocomplete="off" class="mini-form">
+            <input type="text" id="goal-title" placeholder="이루고 싶은 목표는?" required>
+            <button type="submit" class="btn-icon" aria-label="목표 추가"><i data-lucide="plus"></i></button>
+          </form>
+          <ul id="goals-list" class="goals-list">
+            <!-- Goals dynamic injection -->
+          </ul>
+        </div>
+
+        <!-- Quotes Card (인생 명언) -->
+        <div class="card quotes-card">
+          <div class="quotes-header">
+            <h2>오늘의 명언</h2>
+            <button id="toggle-quotes-mode-btn" class="btn-text-sm" aria-label="명언 관리">관리</button>
+          </div>
+          
+          <!-- View Quote Mode -->
+          <div id="quote-display-view">
+            <blockquote class="quote-text" id="quote-text">"삶이 있는 한 희망은 있다."</blockquote>
+            <cite class="quote-author" id="quote-author">- 키케로</cite>
+            <button id="next-quote-btn" class="btn-text-sm" style="margin-top: 12px; display: block;">다른 명언 보기 ➡️</button>
+          </div>
+
+          <!-- Manage Quotes Mode -->
+          <div id="quote-manage-view" style="display: none;">
+            <form id="quote-form" autocomplete="off" class="mini-form-stacked">
+              <input type="text" id="new-quote-text" placeholder="명언을 입력하세요" required>
+              <input type="text" id="new-quote-author" placeholder="작성자 (미입력 시 작자미상)">
+              <button type="submit" class="btn btn-primary btn-sm" style="padding: 8px 12px; font-size: 0.85rem;">추가하기</button>
+            </form>
+            <ul id="custom-quotes-list" class="custom-quotes-list">
+              <!-- Custom quotes management list -->
+            </ul>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Right: Task Content Area -->
+      <section class="task-list-section" aria-label="할 일 및 일정 관리">
+        <!-- View Toggle Tabs -->
+        <div class="view-toggle-container">
+          <button id="view-list-btn" class="view-toggle-btn active">
+            <i data-lucide="list"></i> 목록 보기
+          </button>
+          <button id="view-calendar-btn" class="view-toggle-btn">
+            <i data-lucide="calendar"></i> 캘린더 보기
+          </button>
+        </div>
+
+        <!-- 1. List View Container -->
+        <div id="list-view-container" class="view-container active">
+          <div class="task-list-header">
+            <h2>할 일 목록 <span class="task-badge" id="list-count">0</span></h2>
+            <button id="clear-completed-btn" class="btn-text">완료 항목 삭제</button>
+          </div>
+
+          <div id="empty-state" class="empty-state">
+            <i data-lucide="clipboard-list" class="empty-icon"></i>
+            <p>등록된 할 일이 없습니다.</p>
+            <span class="empty-sub">새로운 할 일을 추가하고 일과를 시작해보세요!</span>
+          </div>
+
+          <ul id="task-list" class="task-list">
+            <!-- Tasks will be dynamically injected here -->
+          </ul>
+        </div>
+
+        <!-- 2. Calendar View Container -->
+        <div id="calendar-view-container" class="view-container">
+          <div class="calendar-header">
+            <h2 id="calendar-month-year">2026년 6월</h2>
+            <div class="calendar-nav">
+              <button id="cal-prev-btn" class="cal-nav-btn" aria-label="이전 달"><i data-lucide="chevron-left"></i></button>
+              <button id="cal-today-btn" class="cal-today-btn">오늘</button>
+              <button id="cal-next-btn" class="cal-nav-btn" aria-label="다음 달"><i data-lucide="chevron-right"></i></button>
+            </div>
+          </div>
+          
+          <div class="calendar-grid-header">
+            <div class="sun">일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div class="sat">토</div>
+          </div>
+          <div id="calendar-grid-days" class="calendar-grid-days">
+            <!-- Calendar days will be dynamically injected here -->
+          </div>
+
+          <!-- Calendar Selected Day Tasks -->
+          <div id="calendar-day-tasks" class="calendar-day-tasks" style="margin-top: 28px; display: none;">
+            <div class="task-list-header" style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 12px;">
+              <h3 style="font-family: var(--font-header); font-size: 1.1rem; color: var(--text-main);"><span id="selected-date-title"></span>의 할 일</h3>
+            </div>
+            <ul id="calendar-day-task-list" class="task-list">
+              <!-- Dynamically populated -->
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
