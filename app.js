@@ -741,6 +741,178 @@ function initQuotes() {
   showRandomQuote();
 }
 
+// ─── Theme Customizer ───────────────────────────────────────
+
+function applyTheme(settings) {
+  if (settings.bg) {
+    document.documentElement.style.setProperty('--bg-color', settings.bg);
+    // lighten card bg slightly compared to page bg
+    document.documentElement.style.setProperty('--card-bg', settings.bg === '#1a202c' || settings.bg === '#1e1b4b' || settings.bg === '#14532d' ? '#ffffff18' : '#ffffff');
+    document.body.style.background = settings.bg;
+    // Auto text colour for dark backgrounds
+    const isDark = isDarkColor(settings.bg);
+    document.documentElement.style.setProperty('--text-main', isDark ? '#f0f4ff' : '#2d3748');
+    document.documentElement.style.setProperty('--text-muted', isDark ? '#a0aec0' : '#718096');
+    document.documentElement.style.setProperty('--border-color', isDark ? '#ffffff22' : '#e2e8f0');
+  }
+  if (settings.accent) {
+    document.documentElement.style.setProperty('--primary', settings.accent);
+    document.documentElement.style.setProperty('--primary-hover', shadeColor(settings.accent, -15));
+    document.documentElement.style.setProperty('--primary-light', settings.accent + '22');
+  }
+  if (settings.font) {
+    document.documentElement.style.setProperty('--font-header', `'${settings.font}', sans-serif`);
+    document.documentElement.style.setProperty('--font-body', `'${settings.font}', sans-serif`);
+  }
+}
+
+function isDarkColor(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return (r*299 + g*587 + b*114) / 1000 < 128;
+}
+
+function shadeColor(hex, pct) {
+  const num = parseInt(hex.replace('#',''), 16);
+  const amt = Math.round(2.55 * pct);
+  const R = Math.min(255, Math.max(0, (num>>16) + amt));
+  const G = Math.min(255, Math.max(0, ((num>>8)&0xFF) + amt));
+  const B = Math.min(255, Math.max(0, (num&0xFF) + amt));
+  return '#' + ((1<<24)+(R<<16)+(G<<8)+B).toString(16).slice(1);
+}
+
+function loadThemeSettings() {
+  const saved = localStorage.getItem('minimalist_theme_settings');
+  if (saved) {
+    try {
+      applyTheme(JSON.parse(saved));
+    } catch(e) { console.error('theme parse error', e); }
+  }
+}
+
+function saveThemeSettings(settings) {
+  localStorage.setItem('minimalist_theme_settings', JSON.stringify(settings));
+}
+
+function getThemeSettings() {
+  return JSON.parse(localStorage.getItem('minimalist_theme_settings') || '{}');
+}
+
+function initThemeCustomizer() {
+  const settingsBtn   = document.getElementById('theme-settings-btn');
+  const drawer        = document.getElementById('theme-drawer');
+  const drawerClose   = document.getElementById('theme-drawer-close');
+  const bgOptions     = document.getElementById('bg-theme-options');
+  const accentOptions = document.getElementById('accent-color-options');
+  const fonts         = document.getElementById('font-options');
+  const bgPicker      = document.getElementById('bg-color-picker');
+  const accentPicker  = document.getElementById('accent-color-picker');
+  const resetBtn      = document.getElementById('reset-theme-btn');
+
+  if (!settingsBtn || !drawer) return;
+
+  // Open / Close drawer
+  settingsBtn.addEventListener('click', () => {
+    drawer.classList.remove('hidden');
+    drawer.classList.add('active');
+  });
+  drawerClose && drawerClose.addEventListener('click', () => {
+    drawer.classList.remove('active');
+    setTimeout(() => drawer.classList.add('hidden'), 300);
+  });
+
+  // Click outside drawer to close
+  document.addEventListener('click', (e) => {
+    if (!drawer.contains(e.target) && e.target !== settingsBtn && !settingsBtn.contains(e.target)) {
+      if (drawer.classList.contains('active')) {
+        drawer.classList.remove('active');
+        setTimeout(() => drawer.classList.add('hidden'), 300);
+      }
+    }
+  });
+
+  // Background swatch buttons
+  bgOptions && bgOptions.addEventListener('click', e => {
+    const btn = e.target.closest('[data-bg]');
+    if (!btn) return;
+    const bg = btn.getAttribute('data-bg');
+    const newSettings = { ...getThemeSettings(), bg };
+    applyTheme(newSettings);
+    saveThemeSettings(newSettings);
+    if (bgPicker) bgPicker.value = bg.length === 7 ? bg : bgPicker.value;
+    markActive(bgOptions, btn);
+  });
+
+  // Accent swatch buttons
+  accentOptions && accentOptions.addEventListener('click', e => {
+    const btn = e.target.closest('[data-accent]');
+    if (!btn) return;
+    const accent = btn.getAttribute('data-accent');
+    const newSettings = { ...getThemeSettings(), accent };
+    applyTheme(newSettings);
+    saveThemeSettings(newSettings);
+    if (accentPicker) accentPicker.value = accent.length === 7 ? accent : accentPicker.value;
+    markActive(accentOptions, btn);
+  });
+
+  // Font buttons
+  fonts && fonts.addEventListener('click', e => {
+    const btn = e.target.closest('[data-font]');
+    if (!btn) return;
+    const font = btn.getAttribute('data-font');
+    const newSettings = { ...getThemeSettings(), font };
+    applyTheme(newSettings);
+    saveThemeSettings(newSettings);
+    markActive(fonts, btn);
+  });
+
+  // Background color picker (custom)
+  if (bgPicker) {
+    bgPicker.addEventListener('input', () => {
+      const bg = bgPicker.value;
+      const newSettings = { ...getThemeSettings(), bg };
+      applyTheme(newSettings);
+      saveThemeSettings(newSettings);
+    });
+  }
+
+  // Accent color picker (custom)
+  if (accentPicker) {
+    accentPicker.addEventListener('input', () => {
+      const accent = accentPicker.value;
+      const newSettings = { ...getThemeSettings(), accent };
+      applyTheme(newSettings);
+      saveThemeSettings(newSettings);
+    });
+  }
+
+  // Reset to defaults
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      localStorage.removeItem('minimalist_theme_settings');
+      document.documentElement.removeAttribute('style');
+      document.body.removeAttribute('style');
+      if (bgPicker) bgPicker.value = '#f7f9fc';
+      if (accentPicker) accentPicker.value = '#8a9df8';
+      document.querySelectorAll('.swatch-btn, .font-btn').forEach(b => b.classList.remove('active-swatch'));
+    });
+  }
+
+  // Load saved settings and apply
+  loadThemeSettings();
+
+  // Sync color pickers to saved values
+  const saved = getThemeSettings();
+  if (bgPicker && saved.bg) bgPicker.value = saved.bg.length === 7 ? saved.bg : bgPicker.value;
+  if (accentPicker && saved.accent) accentPicker.value = saved.accent.length === 7 ? saved.accent : accentPicker.value;
+}
+
+function markActive(container, activeBtn) {
+  container.querySelectorAll('button').forEach(b => b.classList.remove('active-swatch'));
+  activeBtn.classList.add('active-swatch');
+}
+
 // Initial Run
 document.addEventListener('DOMContentLoaded', () => {
   initDate();
@@ -754,102 +926,5 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuotes();
   renderTasks();
   renderGoals();
-
-// Theme Customizer Logic
-const themeSettingsBtn = document.getElementById('theme-settings-btn');
-const themeDrawer = document.getElementById('theme-drawer');
-const themeDrawerClose = document.getElementById('theme-drawer-close');
-const bgThemeOptions = document.getElementById('bg-theme-options');
-const accentColorOptions = document.getElementById('accent-color-options');
-const fontOptions = document.getElementById('font-options');
-
-function applyTheme(settings) {
-  // Background color
-  if (settings.bg) {
-    document.documentElement.style.setProperty('--bg-color', settings.bg);
-    document.documentElement.style.setProperty('--card-bg', settings.bg);
-  }
-  // Accent color
-  if (settings.accent) {
-    document.documentElement.style.setProperty('--primary', settings.accent);
-    document.documentElement.style.setProperty('--primary-light', `${settings.accent}20`);
-  }
-  // Font family
-  if (settings.font) {
-    document.documentElement.style.setProperty('--font-header', settings.font);
-    document.documentElement.style.setProperty('--font-body', settings.font);
-  }
-}
-
-function loadThemeSettings() {
-  const saved = localStorage.getItem('minimalist_theme_settings');
-  if (saved) {
-    try {
-      const settings = JSON.parse(saved);
-      applyTheme(settings);
-    } catch (e) {
-      console.error('Failed to parse theme settings', e);
-    }
-  }
-}
-
-function saveThemeSettings(settings) {
-  localStorage.setItem('minimalist_theme_settings', JSON.stringify(settings));
-}
-
-function initThemeCustomizer() {
-  if (!themeSettingsBtn) return;
-  themeSettingsBtn.addEventListener('click', () => {
-    themeDrawer.classList.remove('hidden');
-    themeDrawer.classList.add('active');
-  });
-  if (themeDrawerClose) {
-    themeDrawerClose.addEventListener('click', () => {
-      themeDrawer.classList.remove('active');
-      themeDrawer.classList.add('hidden');
-    });
-  }
-  // Background theme selection
-  if (bgThemeOptions) {
-    bgThemeOptions.addEventListener('click', e => {
-      const btn = e.target.closest('button[data-bg]');
-      if (!btn) return;
-      const bg = btn.getAttribute('data-bg');
-      const current = JSON.parse(localStorage.getItem('minimalist_theme_settings')||'{}');
-      const newSettings = { ...current, bg };
-      applyTheme(newSettings);
-      saveThemeSettings(newSettings);
-    });
-  }
-  // Accent color selection
-  if (accentColorOptions) {
-    accentColorOptions.addEventListener('click', e => {
-      const btn = e.target.closest('button[data-accent]');
-      if (!btn) return;
-      const accent = btn.getAttribute('data-accent');
-      const current = JSON.parse(localStorage.getItem('minimalist_theme_settings')||'{}');
-      const newSettings = { ...current, accent };
-      applyTheme(newSettings);
-      saveThemeSettings(newSettings);
-    });
-  }
-  // Font selection
-  if (fontOptions) {
-    fontOptions.addEventListener('click', e => {
-      const btn = e.target.closest('button[data-font]');
-      if (!btn) return;
-      const font = btn.getAttribute('data-font');
-      const current = JSON.parse(localStorage.getItem('minimalist_theme_settings')||'{}');
-      const newSettings = { ...current, font };
-      applyTheme(newSettings);
-      saveThemeSettings(newSettings);
-    });
-  }
-  loadThemeSettings();
-}
-
-// Extend DOMContentLoaded to initialize theme customizer
-const originalDomReady = document.addEventListener;
-// Ensure initThemeCustomizer runs after other init functions
-// We'll call it just before ending the listener
-
+  initThemeCustomizer();
+});

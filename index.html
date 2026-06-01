@@ -32,32 +32,60 @@
     <h2>테마 커스텀</h2>
     <button id="theme-drawer-close" class="btn btn-text" aria-label="닫기"><i data-lucide="x"></i></button>
   </div>
+  <!-- 배경색 프리셋 -->
   <div class="drawer-section">
-    <h3>배경 테마</h3>
-    <div class="theme-options" id="bg-theme-options">
-      <button class="theme-btn" data-bg="#f7f9fc" data-name="크림 화이트">화이트</button>
-      <button class="theme-btn" data-bg="#f5f0ff" data-name="라벤더 브리즈">라벤더</button>
-      <button class="theme-btn" data-bg="#f0fff4" data-name="민트 플래시">민트</button>
-      <button class="theme-btn" data-bg="#fff5f0" data-name="피치 선셋">피치</button>
-      <button class="theme-btn" data-bg="#1a202c" data-name="다크 파스텔">다크</button>
+    <h3>🎨 배경색 선택</h3>
+    <div class="color-swatches" id="bg-theme-options">
+      <button class="swatch-btn" data-bg="#f7f9fc" style="background:#f7f9fc" title="크림 화이트"></button>
+      <button class="swatch-btn" data-bg="#f5f0ff" style="background:#f5f0ff" title="라벤더"></button>
+      <button class="swatch-btn" data-bg="#f0fff4" style="background:#f0fff4" title="민트"></button>
+      <button class="swatch-btn" data-bg="#fff5f0" style="background:#fff5f0" title="피치"></button>
+      <button class="swatch-btn" data-bg="#fef3c7" style="background:#fef3c7" title="레몬"></button>
+      <button class="swatch-btn" data-bg="#e0f2fe" style="background:#e0f2fe" title="스카이"></button>
+      <button class="swatch-btn" data-bg="#fce7f3" style="background:#fce7f3" title="핑크"></button>
+      <button class="swatch-btn" data-bg="#ecfdf5" style="background:#ecfdf5" title="그린"></button>
+      <button class="swatch-btn" data-bg="#f1f5f9" style="background:#f1f5f9" title="슬레이트"></button>
+      <button class="swatch-btn" data-bg="#1a202c" style="background:#1a202c" title="다크"></button>
+      <button class="swatch-btn" data-bg="#1e1b4b" style="background:#1e1b4b" title="딥 네이비"></button>
+      <button class="swatch-btn" data-bg="#14532d" style="background:#14532d" title="딥 그린"></button>
+    </div>
+    <!-- 직접 색상 선택 -->
+    <div class="custom-color-row">
+      <label for="bg-color-picker">직접 선택</label>
+      <input type="color" id="bg-color-picker" value="#f7f9fc" title="배경색 직접 선택">
     </div>
   </div>
+  <!-- 강조 색상 -->
   <div class="drawer-section">
-    <h3>강조 색상</h3>
-    <div class="theme-options" id="accent-color-options">
-      <button class="color-btn" data-accent="#5c6ac4" data-name="인디고 블루"></button>
-      <button class="color-btn" data-accent="#ff6f91" data-name="파스텔 로즈"></button>
-      <button class="color-btn" data-accent="#f6c343" data-name="멜로우 골드"></button>
-      <button class="color-btn" data-accent="#38b2ac" data-name="세이지 그린"></button>
+    <h3>✨ 강조 색상</h3>
+    <div class="color-swatches" id="accent-color-options">
+      <button class="swatch-btn" data-accent="#8a9df8" style="background:#8a9df8" title="라벤더 블루"></button>
+      <button class="swatch-btn" data-accent="#5c6ac4" style="background:#5c6ac4" title="인디고"></button>
+      <button class="swatch-btn" data-accent="#ff6f91" style="background:#ff6f91" title="로즈"></button>
+      <button class="swatch-btn" data-accent="#f6c343" style="background:#f6c343" title="골드"></button>
+      <button class="swatch-btn" data-accent="#38b2ac" style="background:#38b2ac" title="틸"></button>
+      <button class="swatch-btn" data-accent="#48bb78" style="background:#48bb78" title="그린"></button>
+      <button class="swatch-btn" data-accent="#ed8936" style="background:#ed8936" title="오렌지"></button>
+      <button class="swatch-btn" data-accent="#9f7aea" style="background:#9f7aea" title="퍼플"></button>
+    </div>
+    <div class="custom-color-row">
+      <label for="accent-color-picker">직접 선택</label>
+      <input type="color" id="accent-color-picker" value="#8a9df8" title="강조색 직접 선택">
     </div>
   </div>
+  <!-- 폰트 -->
   <div class="drawer-section">
-    <h3>폰트 선택</h3>
+    <h3>🔤 폰트 선택</h3>
     <div class="font-options" id="font-options">
-      <button class="font-btn" data-font="Outfit" data-name="Outfit (기본)"></button>
-      <button class="font-btn" data-font="Quicksand" data-name="Quicksand"></button>
-      <button class="font-btn" data-font="Playfair Display" data-name="Playfair Display"></button>
+      <button class="font-btn" data-font="Outfit" style="font-family:'Outfit',sans-serif">Outfit</button>
+      <button class="font-btn" data-font="Inter" style="font-family:'Inter',sans-serif">Inter</button>
+      <button class="font-btn" data-font="Quicksand" style="font-family:'Quicksand',sans-serif">Quicksand</button>
+      <button class="font-btn" data-font="Playfair Display" style="font-family:'Playfair Display',serif">Playfair</button>
     </div>
+  </div>
+  <!-- 초기화 버튼 -->
+  <div class="drawer-section">
+    <button id="reset-theme-btn" class="btn-reset-theme">🔄 기본값으로 초기화</button>
   </div>
 </div>
 
